@@ -4,6 +4,7 @@ import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 
 export default {
+    allowGlobalContext: true,
     migrations: {
         path: path.join(__dirname, "./migrations"),
         pattern: /^[\w-]+\d+\.[tj]s$/

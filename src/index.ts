@@ -5,7 +5,7 @@ import mikroOrmConfig from "./mikro-orm.config";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroOrmConfig);
-
+    await orm.getMigrator().up();
     const post = orm.em.create(Post, {
         title: 'my first post',
         createdAt: new Date(),
@@ -15,4 +15,4 @@ const main = async () => {
     await orm.em.persistAndFlush(post);
 }
 
-main();
+main().catch((err) => console.log(err));
