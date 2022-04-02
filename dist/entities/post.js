@@ -26,12 +26,12 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, core_1.Property)({ type: 'date' }),
-    __metadata("design:type", Object)
+    __metadata("design:type", Date)
 ], Post.prototype, "createdAt", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, core_1.Property)({ type: 'date', onUpdate: () => new Date() }),
-    __metadata("design:type", Object)
+    __metadata("design:type", Date)
 ], Post.prototype, "updatedAt", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
