@@ -13,7 +13,10 @@ exports.Post = void 0;
 const core_1 = require("@mikro-orm/core");
 const type_graphql_1 = require("type-graphql");
 let Post = class Post {
-    constructor() {
+    constructor(title) {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+        this.title = title;
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
@@ -40,7 +43,8 @@ __decorate([
 ], Post.prototype, "title", void 0);
 Post = __decorate([
     (0, type_graphql_1.ObjectType)(),
-    (0, core_1.Entity)()
+    (0, core_1.Entity)(),
+    __metadata("design:paramtypes", [String])
 ], Post);
 exports.Post = Post;
 //# sourceMappingURL=Post.js.map

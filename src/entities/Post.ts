@@ -19,4 +19,10 @@ export class Post {
     @Field()
     @Property({type: 'text'})
     title!: string;
+
+    constructor(title: string) {
+        this.title = title;
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
 }
