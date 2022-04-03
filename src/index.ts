@@ -9,6 +9,9 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/posts";
 import { UserResolver } from "./resolvers/user";
 
+const redis = require('redis');
+const session = require('express-session');
+
 const main = async () => {
     const orm = await MikroORM.init(mikroOrmConfig);
 
