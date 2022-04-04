@@ -8,7 +8,6 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/posts";
 import { UserResolver } from "./resolvers/user";
-import { appendFile } from "fs";
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -25,6 +24,7 @@ const main = async () => {
 
     app.use(
         session({
+            name: 'qid',
             store: new RedisStore({ client: redisClient }),
             secret: 'keyboard cat',
             resave: false,
