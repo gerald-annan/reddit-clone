@@ -11,6 +11,7 @@ import { UserResolver } from "./resolvers/user";
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
+import { truncate } from "fs";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroOrmConfig);
@@ -25,8 +26,17 @@ const main = async () => {
     app.use(
         session({
             name: 'qid',
-            store: new RedisStore({}),
-            secret: 'keyboard cat',
+            store: new RedisStore({
+                client: redisClient,
+                disableTouch: true
+            }),
+            cookie: {
+                maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
+                httpOnly: true,
+                sameSite: "lax",
+                secure: __prod__
+            },
+            secret: 'xnianqh8h4fhpvnadhacpmh',
             resave: false,
         }) 
     )
