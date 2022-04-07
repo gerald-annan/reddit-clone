@@ -20,12 +20,12 @@ const main = async () => {
     const app = express();
 
     const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient()
+    const redisClient = redis.createClient();
 
     app.use(
         session({
             name: 'qid',
-            store: new RedisStore({ client: redisClient }),
+            store: new RedisStore({}),
             secret: 'keyboard cat',
             resave: false,
         }) 
