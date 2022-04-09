@@ -2,6 +2,7 @@ import { User } from "../entities/User";
 import { MyContext } from "src/types";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
 import argon2 from "argon2";
+import session from 'express-session';
 
 @InputType()
 class UsernamePasswordInput {
@@ -59,7 +60,22 @@ export class UserResolver {
 
         const hashedPassword = await argon2.hash(options.password);
         const user = em.create(User, new User(options.username, hashedPassword));
-        await em.persistAndFlush(user);
+        try{
+            await em.persistAndFlush(user);
+        } catch (err) {
+
+            if (err.code === "23505") {
+                return {
+                    errors: [
+                        {
+                            field: "username",
+                            message: "username already taken"
+                        },
+                    ]
+                }
+            }
+        }
+
         return { user };
     }
 

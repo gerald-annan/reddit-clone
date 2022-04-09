@@ -22,14 +22,14 @@ const type_graphql_1 = require("type-graphql");
 const hello_1 = require("./resolvers/hello");
 const posts_1 = require("./resolvers/posts");
 const user_1 = require("./resolvers/user");
+const session = require("express-session");
+let redisStore = require("connect-redis")(session);
+const { createClient } = require("redis");
+let redisClient = createClient({ legacyMode: true });
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const orm = yield core_1.MikroORM.init(mikro_orm_config_1.default);
     yield orm.getMigrator().up();
     const app = (0, express_1.default)();
-    const session = require("express-session");
-    let redisStore = require("connect-redis")(session);
-    const { createClient } = require("redis");
-    let redisClient = createClient({ legacyMode: true });
     redisClient.connect().catch(console.error);
     app.use(session({
         name: 'qid',

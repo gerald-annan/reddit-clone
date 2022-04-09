@@ -92,7 +92,21 @@ let UserResolver = class UserResolver {
             }
             const hashedPassword = yield argon2_1.default.hash(options.password);
             const user = em.create(User_1.User, new User_1.User(options.username, hashedPassword));
-            yield em.persistAndFlush(user);
+            try {
+                yield em.persistAndFlush(user);
+            }
+            catch (err) {
+                if (err.code === "23505") {
+                    return {
+                        errors: [
+                            {
+                                field: "username",
+                                message: "username already taken"
+                            },
+                        ]
+                    };
+                }
+            }
             return { user };
         });
     }

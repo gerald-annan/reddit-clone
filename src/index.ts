@@ -9,10 +9,13 @@ import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/posts";
 import { UserResolver } from "./resolvers/user";
 import redis from 'redis';
-import session from 'express-session';
 import connectRedis from 'connect-redis';
 import { MyContext } from "src/types";
-import { create } from "domain";
+
+const session = require("express-session");
+let redisStore = require("connect-redis")(session);
+const { createClient } = require("redis");
+let redisClient = createClient({ legacyMode: true });
 
 const main = async () => {
     const orm = await MikroORM.init(mikroOrmConfig);
@@ -21,11 +24,6 @@ const main = async () => {
 
     const app = express();
 
-    const session = require("express-session");
-    let redisStore = require("connect-redis")(session);
-    const { createClient } = require("redis");
-    let redisClient = createClient({ legacyMode: true });
-    
     redisClient.connect().catch(console.error);
 
     app.use(
