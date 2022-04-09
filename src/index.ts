@@ -11,7 +11,8 @@ import { UserResolver } from "./resolvers/user";
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import { truncate } from "fs";
+import { MyContext } from "src/types";
+import { create } from "domain";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroOrmConfig);
@@ -20,13 +21,17 @@ const main = async () => {
 
     const app = express();
 
-    const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient();
+    const session = require("express-session");
+    let redisStore = require("connect-redis")(session);
+    const { createClient } = require("redis");
+    let redisClient = createClient({ legacyMode: true });
+    
+    redisClient.connect().catch(console.error);
 
     app.use(
         session({
             name: 'qid',
-            store: new RedisStore({
+            store: new redisStore({
                 client: redisClient,
                 disableTouch: true
             }),
@@ -36,6 +41,7 @@ const main = async () => {
                 sameSite: "lax",
                 secure: __prod__
             },
+            saveUninitialized: false,
             secret: 'xnianqh8h4fhpvnadhacpmh',
             resave: false,
         }) 
@@ -46,7 +52,7 @@ const main = async () => {
             resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false
         }),
-        context: () => ({ em: orm.em })
+        context: ({req, res}): MyContext => ({ em: orm.em, req, res })
     })
 
     apolloServer.start().then(_ => {

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const core_1 = require("@mikro-orm/core");
+const constants_1 = require("./constants");
 const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
@@ -25,12 +26,33 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const orm = yield core_1.MikroORM.init(mikro_orm_config_1.default);
     yield orm.getMigrator().up();
     const app = (0, express_1.default)();
+    const session = require("express-session");
+    let redisStore = require("connect-redis")(session);
+    const { createClient } = require("redis");
+    let redisClient = createClient({ legacyMode: true });
+    redisClient.connect().catch(console.error);
+    app.use(session({
+        name: 'qid',
+        store: new redisStore({
+            client: redisClient,
+            disableTouch: true
+        }),
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
+            httpOnly: true,
+            sameSite: "lax",
+            secure: constants_1.__prod__
+        },
+        saveUninitialized: false,
+        secret: 'xnianqh8h4fhpvnadhacpmh',
+        resave: false,
+    }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
             resolvers: [hello_1.HelloResolver, posts_1.PostResolver, user_1.UserResolver],
             validate: false
         }),
-        context: () => ({ em: orm.em })
+        context: ({ req, res }) => ({ em: orm.em, req, res })
     });
     apolloServer.start().then(_ => {
         apolloServer.applyMiddleware({ app });
