@@ -70,26 +70,6 @@ UserResponse = __decorate([
 let UserResolver = class UserResolver {
     register(options, { em }) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (options.username.length <= 2) {
-                return {
-                    errors: [
-                        {
-                            field: "username",
-                            message: "username cannot be less than 2"
-                        },
-                    ],
-                };
-            }
-            if (options.password.length <= 3) {
-                return {
-                    errors: [
-                        {
-                            field: "password",
-                            message: "password cannot be less than 3"
-                        },
-                    ],
-                };
-            }
             const hashedPassword = yield argon2_1.default.hash(options.password);
             const user = em.create(User_1.User, new User_1.User(options.username, hashedPassword));
             try {

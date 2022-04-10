@@ -36,35 +36,13 @@ export class UserResolver {
         @Ctx() { em }: MyContext
     ): Promise<UserResponse> {
 
-        if (options.username.length <= 2) {
-            return {
-                errors: [
-                    {
-                        field: "username",
-                        message: "username cannot be less than 2"
-                    },
-                ],
-            }
-        }
-
-        if (options.password.length <= 3) {
-            return {
-                errors: [
-                    {
-                        field: "password",
-                        message: "password cannot be less than 3"
-                    },
-                ],
-            }
-        }
-
         const hashedPassword = await argon2.hash(options.password);
         const user = em.create(User, new User(options.username, hashedPassword));
         try{
             await em.persistAndFlush(user);
         } catch (err) {
 
-            if (err.code === "23505") {
+            if (err.code === "23505" || err.code === "INTERNAL_SERVER_ERROR") {
                 return {
                     errors: [
                         {
